@@ -1,0 +1,153 @@
+{
+	"matrix": {
+		"prefix":"\\mat",
+		"body":[
+			"\\begin{matrix}",
+			"$1",
+			"\\end{matrix}",
+			"$0"
+		],
+		"description": "matrix"
+	},
+	"align": {
+		"prefix":"\\align",
+		"body":[
+			"\\begin{align}",
+			"$1",
+			"\\end{align}",
+			"$0"
+		],
+		"description": "align"
+	},
+	"align*":{
+		"prefix": "\\align*",
+		"body":[
+			"\\begin{align*}",
+			"$1",
+			"\\end{align*}",
+			"$0"
+		],
+		"description": "align*"
+	},
+	"cases":{
+		"prefix": "\\cases",
+		"body":[
+			"\\begin{cases}",
+			"$1, & $2\\\\",
+			"$3, & $4",
+			"\\end{cases}"
+		],
+		"description":"cases"
+	},
+	"cases*":{
+		"prefix": "\\cases*",
+		"body":[
+			"\\begin{cases*}",
+			"$1, & $2\\\\",
+			"$3, & $4",
+			"\\end{cases*}"
+		],
+		"description":"cases*"
+	},
+	"bra":{
+		"prefix":"\\bra",
+		"body":[
+			"\\left<$1\\right|$0",
+		],
+		"description": "bra Dirac notation",
+	},
+	"ket":{
+		"prefix":"\\ket",
+		"body":[
+			"\\left|$1\\right>$0",
+		],
+		"description": "ket Dirac notation",
+	},
+	"inner product":{
+		"prefix": "\\inprod",
+		"body":[
+			"\\left<$1\\middle|$2\\right>$0",
+		],
+		"description": "inner product Dirac notation"
+	},
+	"product":{
+		"prefix": "\\prod",
+		"body":[
+			"\\prod_{$1}^{$2} $0",
+		],
+		"description": "production"
+	},
+	"sum":{
+		"prefix": "\\sum",
+		"body":[
+			"\\sum_{$1}^{$2} $0",
+		],
+		"description": "sum"
+	},
+	"frac":{
+		"prefix":"\\frac",
+		"body":[
+			"\\frac{$1}{$2}$0",
+		],
+		"description": "fraction"
+	},
+	"big(":{
+		"prefix": "\\big(",
+		"body":[
+			"\\left($1\\right)$0",
+		],
+		"description": "a big bracket"
+	},
+	"big[":{ 
+		"prefix": "\\big[",
+		"body":[ 
+			"\\left[$1\\right]$0",
+		],
+		"description": "a big square bracket",
+	},
+	"big{":{ 
+		"prefix": "\\big{",
+		"body":[ 
+			"\\left\\{$1 \\right \\} $0",
+		],
+		"description": "a big brace bracket",
+	},
+	"such that":{ 
+		"prefix": ["\\st","st","such that"],
+		"body": [
+			"\\text{such that}",
+		],
+		"description":"such that"
+	},
+	"normal subgroup": {
+		"prefix": "LeftTriangle",
+		"body": "\\lhd",
+	},
+	"normal subgroup_":{
+		"prefix": "RightTriangle",
+		"body":"\\rhd",
+	},
+	"partial derivatives":{
+		"prefix": ["\\pardif","\\pardev"],
+		"body":"{\\partial $1\\over\\partial $2} $0",
+	},
+	"sqrta2b2":{
+		"prefix":["\\gougu","\\sqrta2b2"],
+		"body":"\\sqrt{{$1}^2+{$2}^2}$0"
+	},
+	"defset":{ 
+		"prefix":["\\defset","\\setdef"],
+		"body":"\\left\\{$1\\middle|$2\\right\\}$0",
+	},
+	"mod": {
+		"prefix":["\\mod"],
+		"body": "||$1||$0"
+	},
+	"tensor": {
+		"prefix":["\\tensor"],
+		"body":"\\otimes"
+	}
+	
+	
+}
+

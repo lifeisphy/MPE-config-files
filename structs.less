@@ -1,0 +1,39 @@
+//用于内容分栏
+@footer-bgcolor:rgb(139, 0, 18);
+@footer-fontcolor:white;
+@footer-height: 46px;
+@padding:1%;
+.footer {
+    padding-left:@padding;
+    padding-right:@padding;
+    font-size: 35px;
+    color:@footer-fontcolor;
+    position:fixed;
+    bottom:0px;
+    background-color:@footer-bgcolor;
+    width:100%-2*@padding;
+    height:@footer-height;
+}
+.column {
+    
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 30px;
+}
+.column3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 15px;
+}
+.column4 {
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-gap: 5px;    
+}
+
+.item {
+    text-align: left;
+}
+.center {
+    text-align:center;
+}

@@ -1,0 +1,108 @@
+// .markdown-preview {
+//   background-color: antiquewhite;
+// }
+@label-height:28px;
+
+.bar_template {
+  .label {
+    position:absolute;
+    left:20px;
+    top:-15px;
+    color:white;
+    padding:0px 6px 0px 6px;
+  }
+  &:before {
+    position:absolute;
+    left:20px;
+    top:-15px;
+    color:white;
+    padding:0px 6px 0px 6px;
+  }
+  margin-top:20px;
+  margin-bottom:20px;
+  border:1px solid;
+  position:relative;
+  padding:@label-height/2;
+  border-radius: 5px;
+}
+
+.def,.d, .yellow {//definition
+  .bar_template();
+  &:before {
+    content: attr(name);
+    background-color:#d8b049;
+  }
+
+  background-color: #f3e9de;
+  border-color: #e6d303;
+  
+}
+
+.thm,.theorem,.t {//theorem
+  .bar_template();
+  &:before {
+    content: attr(name);
+    background-color:#42b51b;
+  }
+  background-color: #b2f1ce;
+  border-color: #e6d303;
+}
+
+.pf,.proof,.p { //proof
+  .bar_template();
+
+  &:before {
+    content: "证明";
+    color: white;
+    background-color: rgb(73, 73, 255);
+  }
+  &:after {
+    content: "得证";
+    color: blue;
+  }
+  background-color:aqua;
+  border-color:lightpink;
+}
+.blue, .properties, .property, .prop{
+  .bar_template();
+  &:before {
+    content: attr(name);
+    color: white;
+    background-color: rgb(73, 73, 255);
+  }
+  background-color:aqua;
+  border-color:lightpink;
+}
+
+.question, .q,.pink {//question
+  .bar_template();
+  &:before {
+    content:attr(name);
+    color: white;
+    background-color:rgb(250, 151, 168);
+  }
+  background-color:rgb(252, 210, 217);
+  border-color:rgb(233, 88, 233)
+}
+
+.eg ,.ex, .example {
+  .bar_template();
+  &:before {
+    content: attr(name);
+    color: white;
+    background-color: rgb(43, 187, 43);
+  }
+  background-color:rgb(12, 247, 106);
+  border-color:rgb(12, 185, 81);
+}
+
+.lemma {
+  .bar_template();
+  &:before {
+    content:attr(name);
+    color: white;
+    background-color: #871bb5;
+  }
+  background-color: #cbb6e5;
+  border-color:#771be7;
+}

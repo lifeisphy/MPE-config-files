@@ -1,0 +1,123 @@
+
+
+@text-fontsize: 42px;
+// @h: 13%;
+.title-template {
+    // height: @h;
+    font-weight: bold;
+    margin-left:5px !important;
+    margin-right:5px !important;
+    margin-top:5px !important;
+    margin-bottom:5px !important;
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-top:2px;
+    padding-bottom: 2px;
+}
+@width: 70%;
+@height: 50%;
+.middle-screen {
+    position: fixed;
+    margin: auto;
+    text-align: center;
+    left: 50%-0.5*@width;
+    top: 50%-0.5*@height;
+    width: @width;
+    height: @height;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+.title1 {
+    font-size: 72px !important;
+    color: whitesmoke;
+    background-color: rgb(139,0,18);
+    height:12%;
+    .title-template();
+}
+.title2 {
+    font-size: 60px !important;
+    background-color: rgb(242, 100, 123);
+    .title-template();
+    height:10%;
+}
+.title3 {
+    font-size: 48px !important;
+    background-color: rgb(81, 255, 0);
+    .title-template();
+    height:8%;
+}
+.title4 {
+    font-size: 36px !important;
+    background-color: rgb(213, 183, 50);
+    .title-template();
+    height:7%;
+}
+
+.title{
+    color: whitesmoke !important;
+    font-size: 72px;
+    font-weight: bold;
+    background-color: rgb(139, 0, 18);
+}
+
+
+@font-family:heiti;
+.markdown-preview {
+    // background-color: blue;
+    font-size:x-large;
+    text-align: left !important;
+    @media print {
+        background-color: white;
+    }
+}
+.reveal .slides {
+    text-align: left;
+    font-family: @font-family;
+}
+.def,.pf,.thm {
+    text-align: left;
+}
+div .slides {
+    width:100% !important;
+    height:100% !important;
+    font-size: @text-fontsize !important;
+}
+.title-footer > .content {
+    height: 81%;
+}
+.no-footer >.content {
+    height: 87%
+}
+.no-title >.content {
+    height: 93%
+}
+.no-title-footer >.content {
+    height: 99%;
+}
+.footer {
+    height:6%;
+}
+div .content {
+    position:relative;
+    width:95%;
+    
+    // bottom: 50px;
+    overflow:visible;
+    text-align: left;
+    margin:auto;
+}
+img {
+    width:50%;
+}
+.slide {
+    margin:0;
+    top:0px !important;
+}
+section {
+    height:100%;
+}
+
+
+
