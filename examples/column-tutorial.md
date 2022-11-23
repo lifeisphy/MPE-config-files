@@ -1,22 +1,21 @@
 # 分栏教学
 尽管`structs.json`中内置了分2、3、4、5栏的class，但分的太多或许也不实用，所以我只定义了分两栏、分三栏的指令（只在PPT添加底部标签的时候用到了分四栏的操作）。使用起来也很简单：
 ```
-（下面均去掉"_")
-t_wocolumn:
-l_eft:
+twocolumn:
+left:
 xxx
-r_ight:
+right:
 yyy
-e_nd.
+end.
 
-t_hreecolumn:
-l_eft:
+threecolumn:
+left:
 xxx
-m_iddle:
+middle:
 zzz
-r_ight:
+right:
 yyy
-e_nd.
+end.
 ```
 而且每一栏可以添加任意的元素，只要你不怕宽度溢出（x
 比如：
@@ -24,7 +23,7 @@ twocolumn:
 left:
 左边的东西
 \def[左边的定义]{
-
+123
 }
 right:
 右边的东西

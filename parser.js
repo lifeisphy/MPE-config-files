@@ -38,16 +38,20 @@ function katex_macro_replace(markdown){
    * 需要根据katex_config.js进行宏替换才能正常使用公式
    */
   var katex_macros = require("./katex_config").macros;
-  f = new FileWriter(`D:/PKU/notes/QCQI/test.txt`);
+  
   for (var key in katex_macros){
     val = katex_macros[key]
-    re = new RegExp(`(\\${key})(?=[^\\w])`,'gm');
-    
-    function replacement(whole,value){
-      // f.append(`${whole}:${value}\n`);
-      return val;
+    if(key.startsWith("\\")){
+      
+      re = new RegExp(`\\${key}(?=[\\W])`,'gm');
+      markdown = markdown.replace(re,val);
     }
-    markdown = markdown.replace(re,replacement);
+    // function replacement(whole,value){
+    //   f.append(`${whole}:${value}:${val}\n`);
+    //   return val;
+    // }
+    
+    // markdown = markdown.replace(re,replacement);
     // re = /\\a(?=[^\w])/gm;
   }
   return markdown;
@@ -65,9 +69,6 @@ function do_css_import(markdown,mode){
 function do_markdown_import(markdown){
   // TODO
   // why use this? The PPT mode cannot work well with built-in @import.
-  // reg = /\\([\w]*?)((\[[^\[\]]*?\])+?){(([^{}]|(\${1,2}[^\$]+?\${1,2}))+?)}/gm
-  // reg = 
-  // FileWriter(filename).read()
 }
 function on_will_parse_main(markdown,mode){
   //passage,powerpoint,post,none
@@ -83,6 +84,9 @@ function on_will_parse_main(markdown,mode){
       markdown = column(markdown);
       markdown = transform_labels(markdown);
       markdown = transform_unclosed_labels(markdown);
+      if(mode == "passage"){
+        markdown = passage_addHeader(markdown,docjson_global);
+      }
       if(mode=="powerpoint"){
         // markdown =transform_zhihu_type(markdown);
         
@@ -96,6 +100,40 @@ function on_will_parse_main(markdown,mode){
   }
   return markdown;
 };
+function passage_addHeader(markdown,docjson_global) {
+  if(!docjson_global['header']||docjson_global['header']==false){
+    return markdown;
+  }
+  date = docjson_global['date'];
+  author = docjson_global['author'];
+  title = docjson_global['title'];
+  institute = docjson_global['institute'];
+
+  // var match = markdown.match(/---\r?\n[\w\W]*?\r?\n---\s*/gm);
+
+  // res='';
+  // pair = match[0];
+  
+  // idx= markdown.search(pair);
+  // markdown1=markdown.slice(0,idx+pair.length);
+  // markdown2=markdown.slice(idx);
+  var insert = ''
+  if(title){
+    insert+= `<div class="title_passage"> ${title}</div>\n`
+  }
+  if(author){
+    insert += `<div class="author">${author}</div>\n`
+  }
+  if(institute){
+    insert += `<div class="institute">${institute}</div>\n`;
+  }
+  if(date){
+    insert += `<div class="date">${date}</div>\n`;
+  }
+  
+  return insert + markdown;
+
+}
 function on_did_parse_main(mdhtml){
   //加入脚本/fontsize.js
   mode = docjson_global['mode'];
@@ -118,11 +156,7 @@ function in_(query,array) {
   return false;
 }
 MaxRecursionDepth=4;
-// default_attributes = {
-//   "def":["name"],
-//   "img":["src","name"]
-// }
-function transform_labels(markdown ){ 
+function transform_labels(markdown,zhihu=false){ 
    /**
    * transform unclosed labels like:
    * \def[definition1]{
@@ -134,41 +168,62 @@ function transform_labels(markdown ){
    * 
    */
   // reg= /\\(.*?)\[(.*?)\]{(([^{}]|(\${1,2}[^\$]+?\${1,2}))+?)}/gm;
-  reg_=/\\([\w]*?)((\[[^\[\]]*?\])+?){(([^{}]|(\${1,2}[^\$]+?\${1,2}))+?)\s*}/gm; //\xxx[a][b]{content} create an HTML element <xxx a..b>content</xxx>
+  var reg_=/\\(!?)([\w]*?)((\[[^\[\]]*?\])+?){(([^{}]|(\${1,2}[^\$]+?\${1,2}))+?)\s*}/gm; 
+  //\xxx[a][b]{content} create an HTML element <div a..b>content</div>
+  //\!xxx[a][key=val]{content} create an inline HTML element.
+
+  var style_attributes = ['width','height','font','font-size','font-family','text-align','font-weight','font-style','background-color','color']; // these attributes will be put in "style" like:  "style":"width:100px;height:100px;"
+
+  var default_attributes = ["name"]; // its order is important
   
-  style_attributes = ['width','height','font','font-size','font-family','text-align','font-weight','font-style','background-color','color']; // these attributes will be put in "style" like:  "style":"width:100px;height:100px;"
-  default_attributes = ["name"]; // its order is important
-  
-  replacement_ = function(whole,barname,attrs,lastlabel,content){
+  replacement_ = function(whole,bang,barname,attrs,lastlabel,content){
+    if(zhihu){
+      return `${content}\n`;
+    }
+    
     // labellist=labels.match(/\[[^\[^\]]*?\]/gm);
     attrs = attrs.slice(1,-1);
     labellist = attrs.split("][");
-    properties={};
+    properties={"other":{},"style":{}};
     cnt = 0;
+    
     for(var i = 0;i<labellist.length;i++){
       if(labellist[i].search("=") != -1){ //key=value
         
         key = labellist[i].split("=")[0];
         value = labellist[i].split("=")[1];
-        properties[key]=value;
+        properties['other'][key]=value;
+      } else if(labellist[i].search(':') != -1) { // key: value
+        key = labellist[i].split(':')[0];
+        value = labellist[i].split(':')[1];
+        properties['style'][key] = value;
       } else {
-        properties[default_attributes[cnt]]=labellist[i];// use default attribute
+        if(labellist[i]){
+        properties['other'][default_attributes[cnt]]=labellist[i];// use default attribute
         cnt = ( cnt + 1 ) % default_attributes.length;
+        }
       }
     }
     style="";
     nonstyle = "";
-    
-    for (key in properties){
-      value = properties[key];
-      // if (key in style_attributes || key==style_attributes){
+    if(bang){
+     style+="display:inline;"; 
+    }
+    // other 部分查表处理，style部分直接进入样式表
+    for (key in properties['other']){
+      value = properties['other'][key];
       if(in_(key,style_attributes)){
         style+= `${key}:${value};`;
       } else {
         nonstyle += `${key}=${value} `;
       }
     }
-    ret= `<div class="${barname}" ${nonstyle} style="${style}">\n${content}\n</div>\n`;
+    for(key in properties['style']){
+      value = properties['style'][key];
+      nonstyle += `${key}:${value};`;
+    }
+    // ret= `<xxx class="${barname}" ${nonstyle} style="${style}">${content}</xxx>`;
+    ret= `<div class="${barname}" ${nonstyle} style="${style}">\n${content}</div>`;
     return ret;
   }
   for(var i=0;i<MaxRecursionDepth;i++){
@@ -191,7 +246,7 @@ function transform_unclosed_labels(markdown,restricted_types=null){
    * style_attributes = ["width"]
    * \abc[width=100px][class="123"] ---> <abc class="123" style="width:100px">
    * 
-   * used default attributes to specify the properties without names specified.
+   * used default attributes to specify the properties without keys.
    * default_attributes = ["src", "width"]
    * \img["1.png"]["300px"] ---> <img src="1.png" width="300px">
    */
@@ -200,11 +255,11 @@ function transform_unclosed_labels(markdown,restricted_types=null){
   }else{
     restricted = false;    
   }
-  reg_=/\\([\w]*?)((\[[\w :\/%=".-]*?\])+)/gm; 
+  reg_=/\\(!?)([\w]*?)((\[[\w :\/%=".-]*?\])+)/gm; 
   //\xxx[a][b]{content} create an HTML element <xxx a..b>content</xxx>
-  style_attributes = ['width','height'];
+  style_attributes = ['width','height','float','z-index'];
   default_attributes = ["src"]; // its order is important
-  replacement_ = function(whole,barname,attrs,lastlabel){
+  replacement_ = function(whole,bang,barname,attrs,lastlabel){
     // f = new FileWriter("D:/PKU/notes/QCQI/1.txt");
     // f.append(`label:${labellist[i]},result:${labellist[i].search("=")}
     // f.append(`restrict:${restricted},types:${restricted_types}\n`)
@@ -212,32 +267,80 @@ function transform_unclosed_labels(markdown,restricted_types=null){
       //被限制，直接返回
       return whole;
     }
+
+
     attrs = attrs.slice(1,-1);
     labellist = attrs.split("][");
-    properties={};
+    properties={"other":{},"style":{}};
     cnt = 0;
     
     for(var i = 0;i<labellist.length;i++){
-      
       if(labellist[i].search("=") != -1){ //key=value
+        
         key = labellist[i].split("=")[0];
         value = labellist[i].split("=")[1];
-        properties[key]=value;
+        properties['other'][key]=value;
+      } else if(labellist[i].search(':') != -1) { // key: value
+        key = labellist[i].split(':')[0];
+        value = labellist[i].split(':')[1];
+        properties['style'][key] = value;
       } else {
-        properties[default_attributes[cnt]]=labellist[i];// use default attribute
+        if(labellist[i]){
+        properties['other'][default_attributes[cnt]]=labellist[i];// use default attribute
         cnt = ( cnt + 1 ) % default_attributes.length;
+        }
       }
     }
     style="";
     nonstyle = "";
-    for (key in properties){
-      value = properties[key];
+    if(bang){
+     style+="display:inline;"; 
+    }
+    // other 部分查表处理，style部分直接进入样式表
+    for (key in properties['other']){
+      value = properties['other'][key];
       if(in_(key,style_attributes)){
         style+= `${key}:${value};`;
       } else {
         nonstyle += `${key}=${value} `;
       }
     }
+    for(key in properties['style']){
+      value = properties['style'][key];
+      nonstyle += `${key}:${value};`;
+    }
+
+
+
+    // attrs = attrs.slice(1,-1);
+    // labellist = attrs.split("][");
+    // properties={};
+    // cnt = 0;
+    
+    // for(var i = 0;i<labellist.length;i++){
+      
+    //   if(labellist[i].search("=") != -1){ //key=value
+    //     key = labellist[i].split("=")[0];
+    //     value = labellist[i].split("=")[1];
+    //     properties[key]=value;
+    //   } else {
+    //     properties[default_attributes[cnt]]=labellist[i];// use default attribute
+    //     cnt = ( cnt + 1 ) % default_attributes.length;
+    //   }
+    // }
+    // style="";
+    // nonstyle = "";
+    // if(bang){
+    //   style+="display:inline;";
+    // }
+    // for (key in properties){
+    //   value = properties[key];
+    //   if(in_(key,style_attributes)){
+    //     style+= `${key}:${value};`;
+    //   } else {
+    //     nonstyle += `${key}=${value} `;
+    //   }
+    // }
     ret= `<${barname} ${nonstyle} style="${style}">\n`;
     return ret;
   }
@@ -290,9 +393,10 @@ function column(markdown,zhihu=false){
 function transform_zhihu_type(markdown) {
   //该函数适用于多公式情形下向知乎公式转换
   //将行内、行间公式化为zhihu.com/equation站内公式，同时去除样式
-  reg_selfdef_style =  /\\(.*?)\s*\[(.*?)\]\s*{([^{}$]*(((\${1,2}[\w\W]+?\${1,2})|({[^{}]*?}))[^{}$]*)*)}/gm;
-  markdown = markdown.replace(reg_selfdef_style,"$3");
-  markdown = markdown.replace(reg_selfdef_style,"$3"); 
+  // reg_selfdef_style =  /\\(.*?)\s*\[(.*?)\]\s*{([^{}$]*(((\${1,2}[\w\W]+?\${1,2})|({[^{}]*?}))[^{}$]*)*)}/gm;
+  markdown = transform_labels(markdown,true);
+  // markdown = markdown.replace(reg_selfdef_style,"$3");
+  // markdown = markdown.replace(reg_selfdef_style,"$3"); 
   //每行末尾增加两个空格，用于将其解析为换行。
   // markdown = markdown.replace(/(.*?)\r?\n/gm,"$1  \r\n");
    //行内公式

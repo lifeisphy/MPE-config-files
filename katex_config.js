@@ -35,6 +35,7 @@ module.exports = {
     "\\bf":"\\mathbf",
     "\\rm":"\\mathrm",
     "\\bb":"\\mathbb",
+    "\\scr":"\\mathscr",
     "\\v":"\\vec",
     "\\f":"\\frac",
     "\\p":"\\partial",
